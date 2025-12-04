@@ -5,7 +5,7 @@ spring:
   application:
     name: review-service
   datasource:
-    url: jdbc:mysql://mysql-order:3306/order_db?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3308/order_db?createDatabaseIfNotExist=true
     username: appuser
     password: apppassword
     driver-class-name: com.mysql.cj.jdbc.Driver
