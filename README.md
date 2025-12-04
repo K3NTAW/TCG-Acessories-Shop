@@ -1,0 +1,94 @@
+# 3D Printed TCG Accessories Shop
+
+Eine Microservices-basierte E-Commerce-Plattform für 3D-gedruckte Trading Card Game Accessoires.
+
+## 📋 Projektübersicht
+
+Dieses Projekt implementiert eine vollständige Shop-Anwendung für 3D-gedruckte TCG-Accessoires (Deck Boxes, Card Holders, Storage Solutions, etc.) mit einer Microservices-Architektur.
+
+## 🏗️ Architektur
+
+### Core Infrastructure
+- **API Gateway**: Spring Cloud Gateway (Single Entry Point)
+- **Service Discovery**: Eureka Server
+- **Message Broker**: Apache Kafka
+
+### Business Services
+- **Product Catalog Service**: Produktverwaltung (MySQL)
+- **Cart Service**: Warenkorb-Verwaltung (Redis)
+- **Customer Service**: Kundenverwaltung & Authentifizierung (MySQL)
+- **Order Service**: Bestellverwaltung mit Circuit Breaker (MySQL)
+- **Payment Service**: Zahlungsverarbeitung (Mockup)
+- **Manufacturing Service**: 3D-Druck-Job-Verwaltung (MySQL/Mockup)
+- **Review Service**: Produktbewertungen (MySQL/Mockup)
+
+### Frontend
+- **React Frontend**: TypeScript, shadcn/ui Components
+
+## 🚀 Quick Start
+
+### Voraussetzungen
+- Java 17+
+- Maven 3.8+
+- Docker & Docker Compose
+- Node.js 18+ (für Frontend)
+
+### Lokale Entwicklung
+
+1. **Docker Services starten**:
+```bash
+docker-compose up -d
+```
+
+2. **Services starten** (in dieser Reihenfolge):
+   - Eureka Server
+   - API Gateway
+   - Product Catalog Service
+   - Cart Service
+   - Customer Service
+   - Order Service
+   - Payment Service
+   - Manufacturing Service
+   - Review Service
+
+3. **Frontend starten**:
+```bash
+cd frontend/tcg-shop-frontend
+npm install
+npm run dev
+```
+
+## 📚 Dokumentation
+
+- [Projektdefinition](./PROJEKTDEFINITION.md)
+- [Architektur-Dokumentation](./docs/ARCHITEKTUR.md)
+- [Reflexion](./docs/REFLEXION.md)
+
+## 🧪 Testing
+
+- Unit Tests: JUnit 5
+- Integration Tests: Spring Boot Test
+- API Tests: Postman (automatisiert in CI/CD)
+
+## 🔄 CI/CD
+
+GitHub Actions Pipeline:
+- **Build**: Maven Build für alle Services
+- **Test**: Unit & Integration Tests
+- **Deploy**: Docker Images zu Registry, Deployment zu Cloud
+
+## 📝 API Dokumentation
+
+Swagger UI verfügbar unter:
+- API Gateway: `http://localhost:8080/swagger-ui.html`
+- Einzelne Services: `http://localhost:{port}/swagger-ui.html`
+
+## 👥 Autoren
+
+[Ihre Namen hier]
+
+## 📄 Lizenz
+
+Projekt für Bildungszwecke - Modul 321-324
+
+# TCG-Acessories-Shop
