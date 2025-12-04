@@ -37,19 +37,27 @@ Dieses Projekt implementiert eine vollständige Shop-Anwendung für 3D-gedruckte
 
 1. **Docker Services starten**:
 ```bash
+cd docker
 docker-compose up -d
 ```
 
 2. **Services starten** (in dieser Reihenfolge):
-   - Eureka Server
-   - API Gateway
-   - Product Catalog Service
-   - Cart Service
-   - Customer Service
-   - Order Service
-   - Payment Service
-   - Manufacturing Service
-   - Review Service
+   ```bash
+   # Terminal 1: Eureka Server
+   cd services/eureka-server && mvn spring-boot:run
+   
+   # Terminal 2: API Gateway
+   cd services/api-gateway && mvn spring-boot:run
+   
+   # Terminal 3: Product Catalog Service
+   cd services/product-catalog-service && mvn spring-boot:run
+   
+   # Terminal 4: Cart Service
+   cd services/cart-service && mvn spring-boot:run
+   
+   # Terminal 5: Customer Service
+   cd services/customer-service && mvn spring-boot:run
+   ```
 
 3. **Frontend starten**:
 ```bash
@@ -57,6 +65,8 @@ cd frontend/tcg-shop-frontend
 npm install
 npm run dev
 ```
+
+**Siehe [SETUP.md](./SETUP.md) für detaillierte Anweisungen.**
 
 ## 📚 Dokumentation
 
