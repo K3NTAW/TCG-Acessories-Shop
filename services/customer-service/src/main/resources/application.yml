@@ -5,9 +5,9 @@ spring:
   application:
     name: customer-service
   datasource:
-    url: jdbc:mysql://localhost:3307/customer_db?createDatabaseIfNotExist=true
-    username: appuser
-    password: apppassword
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/customer_db?createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:appuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:apppassword}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -20,9 +20,9 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
 
 management:
   endpoints:

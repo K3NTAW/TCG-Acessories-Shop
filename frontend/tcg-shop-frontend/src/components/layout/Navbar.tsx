@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { ShoppingCart, Menu } from 'lucide-react'
+import { ShoppingCart } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { cn } from '@/lib/utils'
 
 export default function Navbar() {
   const location = useLocation()
@@ -29,6 +28,11 @@ export default function Navbar() {
           <Link to="/cart">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
+            </Button>
+          </Link>
+          <Link to="/admin">
+            <Button variant="ghost" size="sm" className="hidden sm:flex">
+              Admin
             </Button>
           </Link>
           <ThemeToggle />

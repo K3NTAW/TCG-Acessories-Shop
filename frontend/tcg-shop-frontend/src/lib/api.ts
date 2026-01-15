@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
+// Use relative URL so nginx can proxy to API Gateway
+// When running in Docker, nginx proxies /api to api-gateway:8080
+// When running locally with npm run dev, vite.config.ts proxies /api to localhost:8080
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -26,6 +29,23 @@ export const productApi = {
   getById: (id: number) => api.get(`/products/${id}`),
   search: (query: string) => api.get(`/products/search?q=${query}`),
   getByCategory: (category: string) => api.get(`/products/category/${category}`),
+  create: (data: {
+    name: string
+    description?: string
+    category: string
+    price: number
+    stockQuantity: number
+    imageUrl?: string
+  }) => api.post('/products', data),
+  update: (id: number, data: {
+    name: string
+    description?: string
+    category: string
+    price: number
+    stockQuantity: number
+    imageUrl?: string
+  }) => api.put(`/products/${id}`, data),
+  delete: (id: number) => api.delete(`/products/${id}`),
 }
 
 // Cart API

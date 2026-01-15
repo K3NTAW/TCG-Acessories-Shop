@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { cartApi } from '@/lib/api'
 import { getSessionId } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,12 +15,15 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true)
   const [removing, setRemoving] = useState<number | null>(null)
   const navigate = useNavigate()
+  const location = useLocation()
   const { toast } = useToast()
 
-  useEffect(() => {
+  const fetchCart = () => {
     const sessionId = getSessionId()
+    setLoading(true)
     cartApi.get(sessionId)
       .then(res => {
+        console.log('Cart fetched:', res.data)
         setCart(res.data)
         setLoading(false)
       })
@@ -28,7 +31,11 @@ export default function CartPage() {
         console.error('Error fetching cart:', err)
         setLoading(false)
       })
-  }, [])
+  }
+
+  useEffect(() => {
+    fetchCart()
+  }, [location.pathname]) // Refresh when navigating to cart page
 
   const handleRemove = (productId: number) => {
     setRemoving(productId)

@@ -27,11 +27,102 @@ public class CartService {
 
     public ShoppingCart getCart(String sessionId) {
         String key = CART_KEY_PREFIX + sessionId;
-        ShoppingCart cart = (ShoppingCart) redisTemplate.opsForValue().get(key);
-        if (cart == null) {
-            cart = new ShoppingCart(sessionId);
+        try {
+            Object value = redisTemplate.opsForValue().get(key);
+            if (value == null) {
+                ShoppingCart cart = new ShoppingCart(sessionId);
+                saveCart(cart);
+                return cart;
+            }
+            // Handle deserialization - GenericJackson2JsonRedisSerializer may return LinkedHashMap
+            if (value instanceof ShoppingCart) {
+                ShoppingCart cart = (ShoppingCart) value;
+                // Ensure items list is initialized
+                if (cart.getItems() == null) {
+                    cart = new ShoppingCart(sessionId);
+                    saveCart(cart);
+                }
+                return cart;
+            } else if (value instanceof java.util.Map) {
+                // Deserialized as Map, convert to ShoppingCart
+                System.out.println("INFO: Converting Map to ShoppingCart for sessionId=" + sessionId);
+                try {
+                    ShoppingCart cart = convertMapToShoppingCart((java.util.Map<?, ?>) value, sessionId);
+                    System.out.println("INFO: Converted cart has " + cart.getItems().size() + " items, total=" + cart.getTotal());
+                    // Save the properly typed cart back to Redis
+                    saveCart(cart);
+                    return cart;
+                } catch (Exception e) {
+                    System.out.println("ERROR converting Map to ShoppingCart: " + e.getMessage());
+                    e.printStackTrace();
+                    redisTemplate.delete(key);
+                    ShoppingCart cart = new ShoppingCart(sessionId);
+                    saveCart(cart);
+                    return cart;
+                }
+            } else {
+                // Unknown type, clear and create new cart
+                System.out.println("WARNING: Retrieved value is not ShoppingCart instance: " + value.getClass().getName());
+                redisTemplate.delete(key);
+                ShoppingCart cart = new ShoppingCart(sessionId);
+                saveCart(cart);
+                return cart;
+            }
+        } catch (Exception e) {
+            // Handle deserialization errors by clearing old data
+            System.out.println("ERROR retrieving cart: " + e.getMessage());
+            e.printStackTrace();
+            redisTemplate.delete(key);
+            ShoppingCart cart = new ShoppingCart(sessionId);
             saveCart(cart);
+            return cart;
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ShoppingCart convertMapToShoppingCart(java.util.Map<?, ?> map, String sessionId) {
+        ShoppingCart cart = new ShoppingCart(sessionId);
+        
+        // Convert items
+        Object itemsObj = map.get("items");
+        if (itemsObj instanceof java.util.List) {
+            java.util.List<?> itemsList = (java.util.List<?>) itemsObj;
+            for (Object itemObj : itemsList) {
+                if (itemObj instanceof java.util.Map) {
+                    java.util.Map<String, Object> itemMap = (java.util.Map<String, Object>) itemObj;
+                    CartItem item = new CartItem();
+                    if (itemMap.get("productId") instanceof Number) {
+                        item.setProductId(((Number) itemMap.get("productId")).longValue());
+                    }
+                    if (itemMap.get("productName") != null) {
+                        item.setProductName(itemMap.get("productName").toString());
+                    }
+                    if (itemMap.get("quantity") instanceof Number) {
+                        item.setQuantity(((Number) itemMap.get("quantity")).intValue());
+                    }
+                    if (itemMap.get("price") != null) {
+                        if (itemMap.get("price") instanceof Number) {
+                            item.setPrice(java.math.BigDecimal.valueOf(((Number) itemMap.get("price")).doubleValue()));
+                        } else if (itemMap.get("price") instanceof String) {
+                            item.setPrice(new java.math.BigDecimal((String) itemMap.get("price")));
+                        }
+                    }
+                    cart.getItems().add(item);
+                }
+            }
+        }
+        
+        // Set total
+        Object totalObj = map.get("total");
+        if (totalObj != null) {
+            if (totalObj instanceof Number) {
+                cart.setTotal(java.math.BigDecimal.valueOf(((Number) totalObj).doubleValue()));
+            } else if (totalObj instanceof String) {
+                cart.setTotal(new java.math.BigDecimal((String) totalObj));
+            }
+        }
+        
+        cart.calculateTotal();
         return cart;
     }
 
@@ -89,7 +180,14 @@ public class CartService {
 
     private void saveCart(ShoppingCart cart) {
         String key = CART_KEY_PREFIX + cart.getSessionId();
-        redisTemplate.opsForValue().set(key, cart, CART_TTL);
+        try {
+            redisTemplate.opsForValue().set(key, cart, CART_TTL);
+            System.out.println("Cart saved: sessionId=" + cart.getSessionId() + ", items=" + (cart.getItems() != null ? cart.getItems().size() : 0) + ", total=" + cart.getTotal());
+        } catch (Exception e) {
+            System.out.println("ERROR saving cart: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
 

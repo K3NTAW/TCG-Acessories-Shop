@@ -5,16 +5,16 @@ spring:
   application:
     name: manufacturing-service
   datasource:
-    url: jdbc:mysql://localhost:3308/order_db?createDatabaseIfNotExist=true
-    username: appuser
-    password: apppassword
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3308/order_db?createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:appuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:apppassword}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: manufacturing-service
       auto-offset-reset: earliest
@@ -29,9 +29,9 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
 
 management:
   endpoints:

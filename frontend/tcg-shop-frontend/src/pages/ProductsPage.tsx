@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, ArrowRight, Box } from 'lucide-react'
+import { ArrowRight, Box } from 'lucide-react'
 
 interface Product {
   id: number

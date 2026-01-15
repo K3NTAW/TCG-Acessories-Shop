@@ -43,7 +43,8 @@ export default function ProductDetailPage() {
       quantity: 1,
       price: product.price,
     })
-      .then(() => {
+      .then((res) => {
+        console.log('Cart response:', res.data)
         toast({
           title: "Added to cart",
           description: `${product.name} has been added to your cart.`,
@@ -53,7 +54,7 @@ export default function ProductDetailPage() {
         console.error('Error adding to cart:', err)
         toast({
           title: "Error",
-          description: "Failed to add item to cart. Please try again.",
+          description: err.response?.data?.message || "Failed to add item to cart. Please try again.",
           variant: "destructive",
         })
       })
