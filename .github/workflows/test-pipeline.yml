@@ -51,15 +51,26 @@ jobs:
       
       - name: Build ${{ matrix.service }}
         working-directory: ./services/${{ matrix.service }}
-        run: mvn clean package -DskipTests
+        run: |
+          mvn clean package -DskipTests
+          if [ $? -ne 0 ]; then
+            echo "❌ Build failed for ${{ matrix.service }}"
+            exit 1
+          fi
+          echo "✅ Build completed for ${{ matrix.service }}"
       
       - name: Verify JAR exists
         run: |
-          if [ ! -f "services/${{ matrix.service }}/target/*.jar" ]; then
+          JAR_COUNT=$(find "services/${{ matrix.service }}/target" -name "*.jar" -not -name "*-sources.jar" -not -name "*-javadoc.jar" 2>/dev/null | wc -l)
+          if [ "$JAR_COUNT" -eq 0 ]; then
             echo "❌ JAR file not found for ${{ matrix.service }}"
+            echo "Contents of target directory:"
+            ls -la "services/${{ matrix.service }}/target/" || echo "Target directory does not exist"
             exit 1
           fi
           echo "✅ Build successful for ${{ matrix.service }}"
+          echo "Found JAR files:"
+          find "services/${{ matrix.service }}/target" -name "*.jar" -not -name "*-sources.jar" -not -name "*-javadoc.jar"
 
   test-docker-build:
     name: Test Docker Build
