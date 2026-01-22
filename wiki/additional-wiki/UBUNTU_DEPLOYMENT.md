@@ -2,6 +2,8 @@
 
 Complete guide for hosting the TCG Shop microservices stack on Ubuntu.
 
+> **Note:** For Oracle Cloud Infrastructure (OCI) instances, see [ORACLE_CLOUD_CONNECTION.md](./ORACLE_CLOUD_CONNECTION.md) for connection and setup instructions.
+
 ## 📋 Prerequisites
 
 ### System Requirements
@@ -27,19 +29,22 @@ sudo apt update && sudo apt upgrade -y
 ### 2. Install Docker
 
 ```bash
-# Remove old versions
-sudo apt remove docker docker-engine docker.io containerd runc
+# Remove old versions (if any)
+sudo apt remove -y docker docker-engine docker.io containerd runc 2>/dev/null || true
 
 # Install prerequisites
+sudo apt update
 sudo apt install -y \
     ca-certificates \
     curl \
     gnupg \
-    lsb-release
+    lsb-release \
+    git
 
 # Add Docker's official GPG key
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 # Set up repository
 echo \
@@ -59,6 +64,20 @@ newgrp docker
 # Verify installation
 docker --version
 docker compose version
+
+# Test Docker
+sudo docker run hello-world
+```
+
+**Alternative: Quick Install Script**
+
+If you prefer a one-liner installation:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+newgrp docker
 ```
 
 ### 3. Clone Repository
